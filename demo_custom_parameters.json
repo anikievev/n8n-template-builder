@@ -1,0 +1,57 @@
+{
+  "name": "Custom Parameters Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "55136996-2997-4100-b390-49ffbac7c5d6",
+      "name": "Custom Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.example.com/data",
+        "ignoreSSLErrors": true,
+        "responseFormat": "json",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer {{ $credential.apiKey }}"
+        }
+      },
+      "id": "d32b3e8d-58f0-406a-908b-0acb864f856c",
+      "name": "Authenticated API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "httpBasicAuth": "my-credentials"
+      }
+    }
+  ],
+  "connections": {
+    "Custom Start": {
+      "main": [
+        [
+          {
+            "node": "Authenticated API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "placeholder_version_id"
+}

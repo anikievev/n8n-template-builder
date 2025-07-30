@@ -1,0 +1,2 @@
+# n8n-template-builder requirements
+# Currently no dependencies required for basic functionality

@@ -1,0 +1,250 @@
+{
+  "name": "Advanced Demo Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "561ba51f-c84a-4f87-a3de-4c98bb6b3f5e",
+      "name": "Start Trigger",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        250,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "path": "demo-webhook"
+      },
+      "id": "efe96d58-955f-4f4f-9e05-f793e767838e",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://jsonplaceholder.typicode.com/posts"
+      },
+      "id": "f53fc5dd-4ea4-4892-b855-1db57df69dd2",
+      "name": "API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        500,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "fields": [
+            {
+              "name": "title",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "name": "userId",
+              "value": "={{ $json.userId }}"
+            },
+            {
+              "name": "status",
+              "value": "={{ $json.id > 50 ? 'high' : 'normal' }}"
+            }
+          ]
+        }
+      },
+      "id": "dc06e626-9629-407f-b859-ed01c73d7c32",
+      "name": "Process Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        750,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": [
+          {
+            "value1": "={{ $json.status }}",
+            "operation": "equals",
+            "value2": "high"
+          }
+        ]
+      },
+      "id": "cdfcfe8a-e878-48ef-b885-493d90bd04f9",
+      "name": "Check Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "123456789",
+        "text": "High priority post: {{ $json.title }}"
+      },
+      "id": "c9ca6aa4-c77c-4c36-8c17-68b707062781",
+      "name": "Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "webhookUri": "https://discord.com/api/webhooks/...",
+        "text": "New post: {{ $json.title }}"
+      },
+      "id": "f598f7e4-567d-471b-b496-e21d5d44e55b",
+      "name": "Discord Notification",
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "to": "admin@example.com",
+        "subject": "New Post Created",
+        "text": "A new post was created: {{ $json.title }}"
+      },
+      "id": "c01e48c7-ec9a-4b83-8b25-c8250b03c0aa",
+      "name": "Email Notification",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "1BxiMVs0XRAflZpRnAIrX4Hf7pZuDzXwJ7pLd0V2A",
+        "worksheetId": "Sheet1"
+      },
+      "id": "8da9c671-64c1-4d06-ad96-063887d691dd",
+      "name": "Log to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        150
+      ]
+    }
+  ],
+  "connections": {
+    "Start Trigger": {
+      "main": [
+        [
+          {
+            "node": "API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Request": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Discord Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Alert": {
+      "main": [
+        [
+          {
+            "node": "Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord Notification": {
+      "main": [
+        [
+          {
+            "node": "Email Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Notification": {
+      "main": [
+        [
+          {
+            "node": "Log to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "placeholder_version_id"
+}
